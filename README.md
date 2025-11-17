@@ -1,57 +1,39 @@
-# React + TypeScript + Vite
+# Tiffin Finder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Warm, culturally inspired web app to discover and order from nearby home kitchens. Built with React + TypeScript, Tailwind, Zustand, and Supabase.
 
-Currently, two official plugins are available:
+## Tech Stack
+- React 18 + TypeScript (Vite)
+- Tailwind CSS (custom cultural design)
+- Zustand (state management)
+- Supabase (auth + Postgres)
+- Express (optional local API)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Setup
+1. Install dependencies: `npm install`
+2. Copy `/.env.example` to `/.env` and fill:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+3. Do not put service role keys in the frontend.
 
-## Expanding the ESLint configuration
+## Run
+- Frontend only: `npm run client:dev` → `http://localhost:5173`
+- Full stack (frontend + backend): `npm run dev`
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Pages: `/signup`, `/login`, `/discover`
+Debug: `/quick-auth-test`, `/test-auth`, `/debug-auth`
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## Database
+- Migrations: `supabase/migrations/20241116_initial_schema.sql`
+- Apply using Supabase SQL editor or CLI
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Environment
+- Secrets are not committed. `.env` is ignored; use `.env.example` for placeholders.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Scripts
+- `npm run dev` — start client and server
+- `npm run client:dev` — start client only
+- `npm run server:dev` — start local API server
 
-export default tseslint.config({
-  extends: [
-    // other configs...
-    // Enable lint rules for React
-    reactX.configs['recommended-typescript'],
-    // Enable lint rules for React DOM
-    reactDom.configs.recommended,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## Deployment
+- Set required environment variables on your platform (e.g., Supabase keys)
