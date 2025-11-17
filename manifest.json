@@ -1,0 +1,10 @@
+{
+  "name": "Tiffin Finder",
+  "short_name": "Tiffin",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0c0f12",
+  "theme_color": "#0c0f12",
+  "description": "Find nearby home-cooked tiffin and thali services."
+}

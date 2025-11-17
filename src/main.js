@@ -1,0 +1,32 @@
+let map
+let placesService
+let infoWindow
+let markers=[]
+let state={center:{lat:28.6139,lng:77.2090},radius:3000,types:{restaurant:true,meal_takeaway:true,meal_delivery:false}}
+const keywords=["tiffin","home cooked","thali","dabba"]
+const excludeTypes=["cafe","bakery","bar","night_club"]
+const excludeText=["cafe","snack","coffee","chai","tea","pizza","burger","sandwich","bakery","juice","ice cream"]
+const qs=(sel)=>document.querySelector(sel)
+const resultsEl=()=>document.getElementById("results")
+const radiusEl=()=>document.getElementById("radius")
+const radiusValueEl=()=>document.getElementById("radiusValue")
+const locStatusEl=()=>document.getElementById("locStatus")
+const btnLocate=()=>document.getElementById("btnLocate")
+const btnSearch=()=>document.getElementById("btnSearch")
+const typeBox=(id)=>document.getElementById(id)
+const btnFilters=()=>document.getElementById("btnFilters")
+const sidebar=()=>document.getElementById("sidebar")
+const filterPanel=()=>document.getElementById("filterPanel")
+window.initMap=()=>{initUI();initLocation().then(()=>{createMap();runSearch()}).catch(()=>{createMap();runSearch()});registerSW()}
+function initUI(){radiusEl().addEventListener("input",()=>{state.radius=Number(radiusEl().value);radiusValueEl().textContent=`${Math.round(state.radius/1000)} km`});typeBox("type_restaurant").addEventListener("change",()=>{state.types.restaurant=typeBox("type_restaurant").checked});typeBox("type_meal_takeaway").addEventListener("change",()=>{state.types.meal_takeaway=typeBox("type_meal_takeaway").checked});typeBox("type_meal_delivery").addEventListener("change",()=>{state.types.meal_delivery=typeBox("type_meal_delivery").checked});btnSearch().addEventListener("click",()=>{runSearch()});btnLocate().addEventListener("click",()=>{initLocation().then(()=>{map.setCenter(state.center);map.setZoom(15);runSearch()})});if(window.innerWidth<920){sidebar().classList.add("collapsed")}btnFilters().addEventListener("click",()=>{sidebar().classList.toggle("collapsed")})}
+
+function registerSW(){if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/service-worker.js').catch(()=>{})})}}
+function initLocation(){return new Promise((resolve,reject)=>{if(!navigator.geolocation){locStatusEl().textContent="Geolocation unavailable";reject();return}if(!window.isSecureContext){locStatusEl().textContent="Location requires https or localhost; use https on phone";reject();return}navigator.geolocation.getCurrentPosition(p=>{state.center={lat:p.coords.latitude,lng:p.coords.longitude};locStatusEl().textContent="Location acquired";resolve()},err=>{if(err&&err.code===1){locStatusEl().textContent="Location blocked; allow in site settings"}else{locStatusEl().textContent="Using default location"}reject()},{enableHighAccuracy:true,timeout:8000,maximumAge:10000})})}
+function createMap(){map=new google.maps.Map(document.getElementById("map"),{center:state.center,zoom:13,disableDefaultUI:false,styles:[{elementType:"geometry",stylers:[{color:"#0a0d10"}]},{elementType:"labels.text.stroke",stylers:[{color:"#0a0d10"}]},{elementType:"labels.text.fill",stylers:[{color:"#c6d1dc"}]},{featureType:"poi",elementType:"geometry",stylers:[{color:"#0f1318"}]},{featureType:"poi.park",elementType:"geometry",stylers:[{color:"#0b1a12"}]},{featureType:"road",elementType:"geometry",stylers:[{color:"#1b222a"}]},{featureType:"water",elementType:"geometry",stylers:[{color:"#0a141f"}]}]});placesService=new google.maps.places.PlacesService(map);infoWindow=new google.maps.InfoWindow}
+function clearMarkers(){markers.forEach(m=>m.setMap(null));markers=[]}
+function runSearch(){clearMarkers();renderEmpty();const activeTypes=Object.entries(state.types).filter(([,v])=>v).map(([k])=>k);if(activeTypes.length===0)return;const unique={};const tasks=[];activeTypes.forEach(t=>{keywords.forEach(k=>{tasks.push(searchOnce({location:state.center,radius:state.radius,keyword:k,type:t}).then(list=>{list.forEach(pl=>{unique[pl.place_id]=pl})}))})});Promise.allSettled(tasks).then(()=>{const items=Object.values(unique).filter(isCandidate).sort((a,b)=>(b.rating||0)-(a.rating||0)).slice(0,40);items.forEach(pl=>{addMarker(pl)});renderList(items)})}
+function isCandidate(pl){const types=pl.types||[];const text=((pl.name||"")+" "+(pl.vicinity||pl.formatted_address||"")).toLowerCase();const pos=keywords.some(k=>text.includes(k));const byType=types.some(t=>excludeTypes.includes(t));const byText=excludeText.some(p=>text.includes(p));return pos&&!byType&&!byText}
+function searchOnce(req){return new Promise(resolve=>{placesService.nearbySearch(req,(res,status)=>{if(status!==google.maps.places.PlacesServiceStatus.OK||!res){resolve([]);return}resolve(res)})})}
+function addMarker(pl){const m=new google.maps.Marker({position:pl.geometry.location,map,icon:{path:"M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5c-1.4 0-2.5-1.1-2.5-2.5S10.6 6.5 12 6.5s2.5 1.1 2.5 2.5S13.4 11.5 12 11.5z",fillColor:"#ffb000",fillOpacity:1,strokeColor:"#1a1f24",strokeWeight:1,scale:1.6},title:pl.name});m.addListener("click",()=>{const addr=pl.vicinity||pl.formatted_address||"";const rating=pl.rating?`★ ${pl.rating}`:"";infoWindow.setContent(`<div class="iw"><div class="iw-title">${pl.name}</div><div class="iw-sub">${addr}</div><div class="iw-badge">${rating}</div></div>`);infoWindow.open({anchor:m,map})});markers.push(m)}
+function renderEmpty(){resultsEl().innerHTML='<div class="empty">No results yet</div>'}
+function renderList(items){if(items.length===0){renderEmpty();return}const html=items.map(pl=>{const addr=pl.vicinity||pl.formatted_address||"";const rating=pl.rating?`★ ${pl.rating}`:"";const open=pl.opening_hours&&typeof pl.opening_hours.isOpen==='function'?pl.opening_hours.isOpen():undefined;const badge=open===undefined?rating:(open?`Open • ${rating}`:`Closed • ${rating}`);return `<div class="card" data-id="${pl.place_id}"><div class="avatar"></div><div><div class="title">${pl.name}</div><div class="subtitle">${addr}</div></div><div class="badge">${badge}</div></div>`}).join("");resultsEl().innerHTML=html;Array.from(resultsEl().querySelectorAll('.card')).forEach(el=>{el.addEventListener('click',()=>{const id=el.getAttribute('data-id');const pl=items.find(x=>x.place_id===id);if(!pl)return;map.panTo(pl.geometry.location);map.setZoom(15)})})}

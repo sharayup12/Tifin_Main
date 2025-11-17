@@ -1,0 +1,182 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Dancing+Script:wght@400;500;600&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* Cultural color variables */
+  --color-terracotta: #D2691E;
+  --color-saffron: #FF9933;
+  --color-deepgreen: #228B22;
+  --color-cream: #FFF8DC;
+  --color-warmbrown: #8B4513;
+  --color-marigold: #FFA500;
+  --color-turmeric: #C8A951;
+  --color-cardamom: #8FBC8F;
+  --color-cinnamon: #D2691E;
+  --color-paprika: #A0522D;
+}
+
+/* Base cultural styling */
+@layer base {
+  body {
+    @apply bg-cream-50 text-warmbrown-700 font-sans;
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(210, 105, 30, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 153, 51, 0.03) 0%, transparent 50%);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif text-warmbrown-800;
+  }
+  
+  /* Custom scrollbar with cultural colors */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-cream-100;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-terracotta-400 rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-terracotta-500;
+  }
+}
+
+/* Cultural component utilities */
+@layer components {
+  .kitchen-card {
+    @apply bg-white rounded-kitchen shadow-food-card border border-terracotta-100 
+           hover:shadow-kitchen-soft hover:scale-105 transition-all duration-300 
+           hover:border-terracotta-200;
+  }
+  
+  .warm-button {
+    @apply bg-gradient-to-r from-terracotta-500 to-saffron-500 
+           text-white font-medium rounded-lg px-6 py-3 
+           hover:from-terracotta-600 hover:to-saffron-600 
+           transform hover:scale-105 transition-all duration-200 
+           shadow-warm-glow hover:shadow-lg;
+  }
+  
+  .cultural-input {
+    @apply bg-cream-50 border-2 border-terracotta-200 rounded-lg 
+           focus:border-terracotta-400 focus:ring-2 focus:ring-terracotta-200 
+           placeholder-warmbrown-400 text-warmbrown-700;
+  }
+  
+  .food-photo-frame {
+    @apply rounded-kitchen border-4 border-cream-300 shadow-food-card 
+           hover:border-saffron-300 transition-all duration-300;
+  }
+  
+  .spice-icon {
+    @apply inline-block w-4 h-4 rounded-full bg-gradient-to-br 
+           from-saffron-400 to-terracotta-400;
+  }
+  
+  .cultural-gradient {
+    background: linear-gradient(135deg, 
+      rgba(210, 105, 30, 0.1) 0%, 
+      rgba(255, 153, 51, 0.1) 50%, 
+      rgba(34, 139, 34, 0.1) 100%);
+  }
+  
+  .warm-shadow {
+    box-shadow: 0 4px 20px rgba(139, 69, 19, 0.1);
+  }
+  
+  .cultural-border {
+    border-image: linear-gradient(45deg, 
+      var(--color-terracotta), 
+      var(--color-saffron), 
+      var(--color-deepgreen)) 1;
+  }
+}
+
+/* Animation utilities */
+@layer utilities {
+  .animate-steam-rise {
+    animation: steam 3s ease-in-out infinite;
+  }
+  
+  .animate-heart-beat {
+    animation: heartbeat 1.5s ease-in-out infinite;
+  }
+  
+  .animate-spice-sprinkle {
+    animation: sprinkle 2s ease-in-out infinite;
+  }
+  
+  .animate-gentle-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-warm-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+}
+
+/* Cultural text styling */
+.cultural-heading {
+  @apply font-serif text-warmbrown-800 text-3xl md:text-4xl font-bold;
+  background: linear-gradient(135deg, var(--color-warmbrown), var(--color-terracotta));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cultural-subheading {
+  @apply font-serif text-warmbrown-700 text-xl md:text-2xl font-semibold;
+}
+
+.cultural-body {
+  @apply font-sans text-warmbrown-600 leading-relaxed;
+}
+
+.cultural-quote {
+  @apply font-script text-terracotta-600 text-lg italic;
+  position: relative;
+}
+
+.cultural-quote::before {
+  content: '"';
+  @apply text-3xl text-saffron-500 absolute -left-4 -top-2;
+}
+
+.cultural-quote::after {
+  content: '"';
+  @apply text-3xl text-saffron-500 absolute -right-4 -bottom-4;
+}
+
+/* Responsive cultural utilities */
+@media (max-width: 768px) {
+  .cultural-heading {
+    @apply text-2xl;
+  }
+  
+  .cultural-subheading {
+    @apply text-lg;
+  }
+  
+  .kitchen-card {
+    @apply hover:scale-105;
+  }
+  
+  .warm-button {
+    @apply px-4 py-2 text-sm;
+  }
+}
